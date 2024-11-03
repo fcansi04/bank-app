@@ -74,3 +74,17 @@ const displayMovArr = function (movements) {
 };
 
 displayMovArr(account1.movements);
+
+const createUsernames = function (user) {
+  let userName = user.toLowerCase().split(' ');
+
+  userName = userName.map(function (item) {
+    return item.slice(0, 1);
+  });
+  userName = userName.join('');
+  return userName;
+};
+
+accounts.forEach(function (item) {
+  item.username = createUsernames(item.owner);
+});

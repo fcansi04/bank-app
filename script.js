@@ -88,3 +88,12 @@ const createUsernames = function (user) {
 accounts.forEach(function (item) {
   item.username = createUsernames(item.owner);
 });
+
+const calcPrintBalance = function (movements) {
+  let balance = movements.reduce(function (acc, val) {
+    return acc + val;
+  }, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+calcPrintBalance(account1.movements);

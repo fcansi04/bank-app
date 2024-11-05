@@ -57,8 +57,14 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const buttonEuro = document.querySelector('.converterToEuro');
+const buttonUsd = document.querySelector('.converterToUsd');
+
+//DİSPLAYING MOVEMENTS//
+
+containerMovements.innerHTML = '';
+
 const displayMovArr = function (movements) {
-  containerMovements.innerHTML = '';
   movements.forEach(function (value, key) {
     const type = value > 0 ? 'deposit' : 'withdrawal';
     const html = `
@@ -66,14 +72,48 @@ const displayMovArr = function (movements) {
     <div class="movements__type movements__type--${type}">${
       key + 1
     } ${type}</div> 
-    <div class="movements__value">${value}€</div>
+    <div class="movements__value">${value} EUR</div>
     </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovArr(account1.movements);
+
+// CALCULATION OF BALANCE AND TOTAL OF IT TO PRINT//
+
+const calcPrintBalance = function (movements) {
+  let balance = movements.reduce(function (acc, val) {
+    return acc + val;
+  }, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+calcPrintBalance(account1.movements);
+
+//CALCULATION OF SUMMARIES//
+
+const calcDisplaySummary = function (movements) {
+  const income = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov, i) => acc + mov, 0);
+
+  const out = movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov, i) => acc + mov, 0);
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(mov => (mov * 1.2) / 100)
+    .filter(mov => mov >= 1)
+    .reduce((acc, mov) => acc + mov, 0);
+
+  labelSumOut.textContent = `${Math.abs(out)} EUR`;
+  labelSumIn.textContent = `${income} EUR`;
+  labelSumInterest.textContent = `${interest} EUR`;
+};
+calcDisplaySummary(account1.movements);
+
+//CREATING USERNAMES AC.TO USERS//
 
 const createUsernames = function (user) {
   let userName = user.toLowerCase().split(' ');
@@ -88,12 +128,3 @@ const createUsernames = function (user) {
 accounts.forEach(function (item) {
   item.username = createUsernames(item.owner);
 });
-
-const calcPrintBalance = function (movements) {
-  let balance = movements.reduce(function (acc, val) {
-    return acc + val;
-  }, 0);
-  labelBalance.textContent = `${balance} EUR`;
-};
-
-calcPrintBalance(account1.movements);

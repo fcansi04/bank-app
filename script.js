@@ -78,7 +78,6 @@ const displayMovArr = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovArr(account1.movements);
 
 // CALCULATION OF BALANCE AND TOTAL OF IT TO PRINT//
 
@@ -88,11 +87,10 @@ const calcPrintBalance = function (movements) {
   }, 0);
   labelBalance.textContent = `${balance} EUR`;
 };
-calcPrintBalance(account1.movements);
 
 //CALCULATION OF SUMMARIES//
 
-const calcDisplaySummary = function (movements) {
+const calcDisplaySummary = function (account, movements) {
   const income = movements
     .filter(mov => mov > 0)
     .reduce((acc, mov, i) => acc + mov, 0);
@@ -103,7 +101,7 @@ const calcDisplaySummary = function (movements) {
 
   const interest = movements
     .filter(mov => mov > 0)
-    .map(mov => (mov * 1.2) / 100)
+    .map(mov => (mov * account.interestRate) / 100)
     .filter(mov => mov >= 1)
     .reduce((acc, mov) => acc + mov, 0);
 
@@ -111,7 +109,6 @@ const calcDisplaySummary = function (movements) {
   labelSumIn.textContent = `${income} EUR`;
   labelSumInterest.textContent = `${interest} EUR`;
 };
-calcDisplaySummary(account1.movements);
 
 //CREATING USERNAMES AC.TO USERS//
 
@@ -127,4 +124,25 @@ const createUsernames = function (user) {
 
 accounts.forEach(function (item) {
   item.username = createUsernames(item.owner);
+});
+
+//LOGIN sec//
+let currentAccount;
+
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    labelWelcome.textContent = `welcome back, Sir ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+
+    containerApp.style.opacity = 1;
+    displayMovArr(currentAccount.movements);
+    calcPrintBalance(currentAccount.movements);
+    calcDisplaySummary(currentAccount, currentAccount.movements);
+    inputLoginUsername.value = inputLoginPin.value = '';
+  }
 });

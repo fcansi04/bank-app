@@ -64,8 +64,8 @@ const buttonUsd = document.querySelector('.converterToUsd');
 
 containerMovements.innerHTML = '';
 
-const displayMovArr = function (movements) {
-  movements.forEach(function (value, key) {
+const displayMovArr = function (acc) {
+  acc.movements.forEach(function (value, key) {
     const type = value > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
@@ -81,11 +81,12 @@ const displayMovArr = function (movements) {
 
 // CALCULATION OF BALANCE AND TOTAL OF IT TO PRINT//
 
-const calcPrintBalance = function (movements) {
-  let balance = movements.reduce(function (acc, val) {
+const calcPrintBalance = function (acc) {
+  let balance = acc.movements.reduce(function (acc, val) {
     return acc + val;
   }, 0);
   labelBalance.textContent = `${balance} EUR`;
+  acc.balance = balance;
 };
 
 //CALCULATION OF SUMMARIES//
@@ -126,6 +127,12 @@ accounts.forEach(function (item) {
   item.username = createUsernames(item.owner);
 });
 
+const updateUI = function (acc) {
+  displayMovArr(acc);
+  calcPrintBalance(acc);
+  calcDisplaySummary(acc, acc.movements);
+};
+
 //LOGIN sec//
 let currentAccount;
 
@@ -140,9 +147,28 @@ btnLogin.addEventListener('click', function (e) {
     }`;
 
     containerApp.style.opacity = 1;
-    displayMovArr(currentAccount.movements);
-    calcPrintBalance(currentAccount.movements);
-    calcDisplaySummary(currentAccount, currentAccount.movements);
+    updateUI(currentAccount);
     inputLoginUsername.value = inputLoginPin.value = '';
+  }
+});
+
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const transeffered = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  if (
+    transeffered > 0 &&
+    receiverAcc &&
+    transeffered <= currentAccount.balance &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    currentAccount.movements.push(-transeffered);
+    receiverAcc?.movements.push(transeffered);
+    updateUI(currentAccount);
   }
 });

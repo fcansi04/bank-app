@@ -62,9 +62,8 @@ const buttonUsd = document.querySelector('.converterToUsd');
 
 //DİSPLAYING MOVEMENTS//
 
-containerMovements.innerHTML = '';
-
 const displayMovArr = function (acc) {
+  containerMovements.innerHTML = '';
   acc.movements.forEach(function (value, key) {
     const type = value > 0 ? 'deposit' : 'withdrawal';
     const html = `
@@ -171,4 +170,20 @@ btnTransfer.addEventListener('click', function (e) {
     receiverAcc?.movements.push(transeffered);
     updateUI(currentAccount);
   }
+});
+
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const indexOfAcc = accounts.findIndex(
+    acc => acc.username === currentAccount.username
+  );
+  if (
+    Number(inputClosePin.value) === currentAccount.pin &&
+    inputCloseUsername.value === currentAccount.username
+  ) {
+    accounts.splice(indexOfAcc, 1);
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
 });

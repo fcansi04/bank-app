@@ -62,9 +62,14 @@ const buttonUsd = document.querySelector('.converterToUsd');
 
 //DİSPLAYING MOVEMENTS//
 
-const displayMovArr = function (acc) {
+const displayMovArr = function (acc, sort = false) {
   containerMovements.innerHTML = '';
-  acc.movements.forEach(function (value, key) {
+
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
+
+  movs.forEach(function (value, key) {
     const type = value > 0 ? 'deposit' : 'withdrawal';
     const html = `
     <div class="movements__row">
@@ -126,8 +131,8 @@ accounts.forEach(function (item) {
   item.username = createUsernames(item.owner);
 });
 
-const updateUI = function (acc) {
-  displayMovArr(acc);
+const updateUI = function (acc, sort = false) {
+  displayMovArr(acc, sort);
   calcPrintBalance(acc);
   calcDisplaySummary(acc, acc.movements);
 };
@@ -196,4 +201,23 @@ btnClose.addEventListener('click', function (e) {
     containerApp.style.opacity = 0;
   }
   inputCloseUsername.value = inputClosePin.value = '';
+});
+
+const { movements } = account1;
+console.log(movements);
+const arr = [...movements];
+arr.sort((a, b) => {
+  if (b > a) return -1;
+  if (a > b) return 1;
+});
+console.log(arr);
+
+let sort = true;
+
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  console.log('sort works');
+
+  updateUI(currentAccount, sort);
+  sort = !sort;
 });

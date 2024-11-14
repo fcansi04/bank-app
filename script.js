@@ -89,7 +89,7 @@ const displayMovArr = function (acc, sort = false) {
       key + 1
     } ${type}</div> 
     <div class="movements__date">${currentAccount.movementsDates[key]}</div>
-    <div class="movements__value">${value} EUR</div>
+    <div class="movements__value">${value.toFixed(1)} EUR</div>
     </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -102,7 +102,7 @@ const calcPrintBalance = function (acc) {
   let balance = acc.movements.reduce(function (acc, val) {
     return acc + val;
   }, 0);
-  labelBalance.textContent = `${balance} EUR`;
+  labelBalance.textContent = `${balance.toFixed(1)} EUR`;
   acc.balance = balance;
 };
 
@@ -111,17 +111,20 @@ const calcPrintBalance = function (acc) {
 const calcDisplaySummary = function (account, movements) {
   const income = movements
     .filter(mov => mov > 0)
-    .reduce((acc, mov, i) => acc + mov, 0);
+    .reduce((acc, mov, i) => acc + mov, 0)
+    .toFixed(1);
 
   const out = movements
     .filter(mov => mov < 0)
-    .reduce((acc, mov, i) => acc + mov, 0);
+    .reduce((acc, mov, i) => acc + mov, 0)
+    .toFixed(1);
 
   const interest = movements
     .filter(mov => mov > 0)
     .map(mov => (mov * account.interestRate) / 100)
     .filter(mov => mov >= 1)
-    .reduce((acc, mov) => acc + mov, 0);
+    .reduce((acc, mov) => acc + mov, 0)
+    .toFixed(1);
 
   labelSumOut.textContent = `${Math.abs(out)} EUR`;
   labelSumIn.textContent = `${income} EUR`;
@@ -192,7 +195,7 @@ btnTransfer.addEventListener('click', function (e) {
 
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
-  const loaned = Number(inputLoanAmount.value);
+  const loaned = Math.floor(inputLoanAmount.value);
   if (loaned > 0 && currentAccount.movements.some(mov => mov > loaned / 10)) {
     currentAccount.movements.push(loaned);
     updateUI(currentAccount);
@@ -216,15 +219,6 @@ btnClose.addEventListener('click', function (e) {
   inputCloseUsername.value = inputClosePin.value = '';
 });
 
-const { movements } = account1;
-console.log(movements);
-const arr = [...movements];
-arr.sort((a, b) => {
-  if (b > a) return -1;
-  if (a > b) return 1;
-});
-console.log(arr);
-
 let sort = true;
 
 btnSort.addEventListener('click', function (e) {
@@ -234,6 +228,3 @@ btnSort.addEventListener('click', function (e) {
   updateUI(currentAccount, sort);
   sort = !sort;
 });
-
-let i = 0;
-console.log(Array.from({ length: 23 }, () => i++));
